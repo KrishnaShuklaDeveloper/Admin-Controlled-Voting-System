@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>🧾 Voting History (Admin Only)</h2>
+<table class="table table-bordered table-hover mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Email</th>
+            <th>Voted At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ log.user.username }}</td>
+            <td>{{ log.user.email }}</td>
+            <td>{{ log.voted_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

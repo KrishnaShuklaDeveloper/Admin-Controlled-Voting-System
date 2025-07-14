@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Voting System{% endblock %}</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Chart.js (optional – used in dashboard) -->
+  {% block chartjs %}{% endblock %}
+
+  <!-- Core Styles -->
+  <style>
+    body {
+      padding-top: 60px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .card-vote {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .theme-toggle {
+      cursor: pointer;
+    }
+  </style>
+
+  <!-- Page-Specific Extra CSS -->
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  <!-- Navbar -->
+  <nav id="main-navbar" class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/dashboard/">🗳️ Voting System</a>
+      <div class="d-flex align-items-center">
+        <button id="theme-toggle" class="btn btn-outline-light btn-sm me-3 theme-toggle">🌙 Dark Mode</button>
+        {% if user.is_authenticated %}
+          <span class="text-light me-2">Hello, {{ user.username }}</span>
+          <a href="/accounts/logout/" class="btn btn-outline-light btn-sm">Logout</a>
+        {% else %}
+          <a href="/accounts/login/" class="btn btn-outline-light btn-sm">Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    {% for msg in messages %}
+      <script>
+        Swal.fire({
+          icon: '{% if msg.tags == "error" %}error{% elif msg.tags == "success" %}success{% else %}info{% endif %}',
+          title: '{{ msg.tags|title }}',
+          text: '{{ msg }}',
+          toast: true,
+          position: 'top-end',
+          timer: 3000,
+          showConfirmButton: false
+        });
+      </script>
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Dark Mode Script -->
+  <script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+    const navbar = document.getElementById('main-navbar');
+
+    function setTheme(mode) {
+      if (mode === 'dark') {
+        body.classList.add('bg-dark', 'text-light');
+        navbar.classList.remove('navbar-light', 'bg-light');
+        navbar.classList.add('navbar-dark', 'bg-dark');
+        toggleBtn.innerText = '☀️ Light Mode';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        body.classList.remove('bg-dark', 'text-light');
+        navbar.classList.remove('navbar-dark', 'bg-dark');
+        navbar.classList.add('navbar-light', 'bg-light');
+        toggleBtn.innerText = '🌙 Dark Mode';
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+
+    toggleBtn.addEventListener('click', () => {
+      const current = localStorage.getItem('theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  </script>
+</body>
+</html>

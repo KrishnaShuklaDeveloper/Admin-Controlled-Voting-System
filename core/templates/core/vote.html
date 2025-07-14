@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% block title %}Cast Your Vote{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">🗳️ Vote for Your Favorite Candidate</h2>
+
+    {% if candidates %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row">
+            {% for candidate in candidates %}
+            <div class="col-md-4 col-sm-6 d-flex align-items-stretch">
+                <div class="card mb-4 shadow-sm w-100 hover-shadow">
+                    {% if candidate.image %}
+                    <img src="{{ candidate.image.url }}" class="card-img-top" alt="{{ candidate.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ candidate.name }}</h5>
+                        <p class="card-text mb-3"><strong>Party:</strong> {{ candidate.party }}</p>
+                        <div class="form-check mt-auto">
+                            <input type="radio" class="form-check-input" name="selected_candidate" value="{{ candidate.id }}" id="candidate{{ candidate.id }}">
+                            <label class="form-check-label" for="candidate{{ candidate.id }}">
+                                Select this candidate
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-lg btn-success px-4 py-2 shadow">✅ Submit Vote</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="alert alert-info text-center" role="alert">
+        No candidates available to vote at the moment.
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        transition: 0.3s ease-in-out;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+</style>
+{% endblock %}

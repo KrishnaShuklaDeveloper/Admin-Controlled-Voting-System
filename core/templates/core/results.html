@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 fw-bold">📊 Voting Results</h2>
+
+    {% if candidates %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for candidate in candidates %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 {% if candidate.vote_count == max_votes %}border-success border-2{% endif %}">
+                        <img src="{{ candidate.image.url }}" class="card-img-top img-fluid" alt="{{ candidate.name }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ candidate.name }}</h5>
+                            <p class="card-text">Votes: <strong>{{ candidate.vote_count }}</strong></p>
+
+                            {% if total_votes > 0 %}
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                         style="width: {{ candidate.percentage }}%;"
+                                         aria-valuenow="{{ candidate.percentage }}"
+                                         aria-valuemin="0" aria-valuemax="100">
+                                        {{ candidate.percentage }}%
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-secondary mt-2">No votes yet</div>
+                            {% endif %}
+
+                            {% if candidate.vote_count == max_votes and total_votes > 0 %}
+                                <span class="badge bg-success">🏆 Leading</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">No candidates available.</div>
+    {% endif %}
+</div>
+
+<!-- Optional: Chart.js Integration -->
+{# Uncomment this block if you want to display a chart for results #}
+{#
+<canvas id="resultsChart" class="mt-5"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('resultsChart');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{% for candidate in candidates %}'{{ candidate.name }}',{% endfor %}],
+            datasets: [{
+                label: 'Votes',
+                data: [{% for candidate in candidates %}{{ candidate.vote_count }},{% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+#}
+
+{% endblock %}
