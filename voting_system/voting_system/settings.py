@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 'your app'
-    'voting_system.core',
+    'core',
     
     # Third-party apps
     'crispy_forms',
