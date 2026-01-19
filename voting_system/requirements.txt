@@ -1,6 +1,8 @@
 Django==5.1.6
 gunicorn
 whitenoise
+openpyxl
+
 
 # Form and UI enhancements
 django-crispy-forms
