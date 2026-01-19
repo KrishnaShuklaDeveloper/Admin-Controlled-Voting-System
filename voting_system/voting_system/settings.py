@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-pzc%%0ja0t5^-trbz(^njk%&go4$srvv-1yzh3rznvt6&*g$+8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["admin-controlled-voting-system.onrender.com"]
+
 
 
 
@@ -141,4 +142,5 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
