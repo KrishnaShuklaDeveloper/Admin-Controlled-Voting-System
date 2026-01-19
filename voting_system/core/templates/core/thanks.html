@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="text-center">
+    <h2 class="text-success">🎉 Thank you for voting!</h2>
+    <a class="btn btn-primary mt-4" href="{% url 'home' %}">Return Home</a>
+</div>
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Vote Submitted',
+        text: 'Thanks for your participation!',
+        confirmButtonColor: '#3085d6'
+    });
+</script>
+{% endblock %}

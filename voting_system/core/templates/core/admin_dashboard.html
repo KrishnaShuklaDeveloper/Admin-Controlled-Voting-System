@@ -1,0 +1,152 @@
+{% extends 'core/base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-center">🛠️ Admin Dashboard</h2>
+    <div class="alert alert-info py-1 px-3 mb-0">
+      Total Votes Cast: <strong id="totalVotes">0</strong> 🗳️
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Vote Chart -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white fw-bold">
+          📊 Live Vote Statistics
+        </div>
+        <div class="card-body">
+          <canvas id="voteChart" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-dark text-white fw-bold">
+          🧭 Admin Controls
+        </div>
+        <div class="card-body d-grid gap-3">
+          <a href="{% url 'export_excel' %}" class="btn btn-outline-primary w-100">📈 Export to Excel</a>
+          <a href="{% url 'export_pdf' %}" class="btn btn-outline-danger w-100">🧾 Export to PDF</a>
+          <a href="{% url 'toggle_voting' %}" class="btn btn-outline-warning w-100">
+            {% if candidates.0.votingstatus_set.first.is_open %}
+              🔒 Close Voting
+            {% else %}
+              🔓 Open Voting
+            {% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Candidate Cards -->
+  <div class="row mt-4" id="candidateCards">
+    <!-- Cards injected by AJAX -->
+  </div>
+</div>
+{% endblock %}
+
+{% block chartjs %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  let chartInstance = null;
+
+  function getChartColors() {
+    const isDark = document.body.classList.contains('bg-dark');
+    return {
+      tickColor: isDark ? '#fff' : '#000',
+      borderColor: isDark ? '#ccc' : '#333'
+    };
+  }
+
+  function renderChart(voteData) {
+    const ctx = document.getElementById('voteChart').getContext('2d');
+    const colors = getChartColors();
+
+    if (chartInstance) chartInstance.destroy();
+
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(voteData),
+        datasets: [{
+          label: 'Votes',
+          data: Object.values(voteData),
+          backgroundColor: ['#0d6efd', '#6610f2', '#198754', '#dc3545', '#fd7e14', '#6f42c1'],
+          borderColor: colors.borderColor,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: colors.tickColor }},
+          y: {
+            beginAtZero: true,
+            ticks: { color: colors.tickColor }
+          }
+        }
+      }
+    });
+  }
+
+  function updateCandidateCards(candidates) {
+    const container = document.getElementById("candidateCards");
+    container.innerHTML = "";
+
+    candidates.forEach(c => {
+      const card = `
+        <div class="col-md-4 col-lg-3 mb-4">
+          <div class="card shadow-sm h-100 border-0">
+            <img src="${c.image_url}" class="card-img-top" alt="${c.name}" style="height: 180px; object-fit: cover;">
+            <div class="card-body text-center">
+              <h5 class="card-title mb-1">${c.name}</h5>
+              <p class="mb-0">🗳️ <strong>${c.votes}</strong> votes</p>
+            </div>
+          </div>
+        </div>
+      `;
+      container.innerHTML += card;
+    });
+  }
+
+  function fetchVoteData() {
+    fetch("{% url 'api_vote_data' %}")
+      .then(response => response.json())
+      .then(data => {
+        renderChart(data.vote_data);
+        document.getElementById("totalVotes").textContent = data.total_votes;
+        updateCandidateCards(data.candidates);
+      })
+      .catch(error => {
+        console.error("Error fetching vote data:", error);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Failed to load chart',
+          showConfirmButton: false,
+          timer: 2000
+        });
+      });
+  }
+
+  fetchVoteData();
+  setInterval(fetchVoteData, 10000);
+
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    setTimeout(() => fetchVoteData(), 400);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="text-center">
+    <h2 class="text-danger">⚠️ You have already voted.</h2>
+    <a class="btn btn-primary mt-4" href="{% url 'home' %}">Return Home</a>
+</div>
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Already Voted',
+        text: 'You can only vote once.',
+        confirmButtonColor: '#d33'
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'core/../core/base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+  <div class="col-md-6 col-lg-5">
+    <div class="card border-0 shadow-lg rounded-4">
+      <div class="card-body p-4">
+        <div class="text-center mb-4">
+          <h3 class="fw-bold">🔐 Welcome Back!</h3>
+          <p class="text-muted small">Please enter your login credentials</p>
+        </div>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger">
+              <strong>Oops!</strong> Please correct the errors below.
+            </div>
+          {% endif %}
+
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+              {{ field|add_class:"form-control" }}
+              {% if field.errors %}
+                <div class="text-danger small mt-1">
+                  {{ field.errors|striptags }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <!-- Show Password Toggle -->
+          {% if form.password or form.password1 %}
+            <div class="form-check mb-3">
+              <input type="checkbox" class="form-check-input" id="showPassword" onclick="togglePassword()">
+              <label class="form-check-label" for="showPassword">👁 Show Password</label>
+            </div>
+          {% endif %}
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">🔓 Login</button>
+          </div>
+        </form>
+
+        <div class="mt-4 text-center">
+          <small class="text-muted">
+            Don’t have an account? <a href="{% url 'register' %}" class="text-decoration-none">Register here</a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Password Toggle Script -->
+<script>
+  function togglePassword() {
+    document.querySelectorAll('input[type="password"]').forEach(field => {
+      field.type = field.type === 'password' ? 'text' : 'password';
+    });
+  }
+</script>
+{% endblock %}

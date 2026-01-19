@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3">👤 Profile</h2>
+  <div class="card p-3 shadow-sm">
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
+    {% if vote %}
+      <p><strong>Your Vote:</strong> {{ vote.candidate.name }}</p>
+      <p><strong>Voted At:</strong> {{ vote.timestamp }}</p>
+    {% else %}
+      <p>You haven't voted yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="text-center mt-5">
+  <h2 class="text-danger">⚠️ Admins are not allowed to vote.</h2>
+  <a href="{% url 'home' %}" class="btn btn-primary mt-3">Return Home</a>
+</div>
+{% endblock %}

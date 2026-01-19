@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Your Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">👋 Welcome, {{ user.username }}!</h2>
+
+<div class="card shadow-sm mb-4 p-4">
+  {% if has_voted %}
+    <h5 class="text-success">✅ You’ve successfully cast your vote!</h5>
+    <p class="mb-0">Thank you for participating in the election.</p>
+  {% else %}
+    <h5 class="text-warning">🕒 You haven’t voted yet.</h5>
+    {% if voting_open %}
+      <p class="mb-2">Voting is currently open. Click below to vote now:</p>
+      <a href="{% url 'vote' %}" class="btn btn-success">Vote Now 🗳️</a>
+    {% else %}
+      <p class="text-muted">Voting is currently closed. Please check back later.</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+{% if has_voted and show_summary %}
+  <div class="card p-3">
+    <h5>📈 Voting Overview</h5>
+    <canvas id="voteChart" height="80"></canvas>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block chartjs %}
+  {% if has_voted and show_summary %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+  {% if has_voted and show_summary %}
+    <script>
+      const ctx = document.getElementById('voteChart').getContext('2d');
+      const voteData = {{ vote_data|safe }};
+      const labels = Object.keys(voteData);
+      const data = Object.values(voteData);
+      const isDark = document.body.classList.contains('bg-dark');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Votes',
+            data: data,
+            backgroundColor: '#0d6efd'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: isDark ? '#fff' : '#000'
+              }
+            },
+            x: {
+              ticks: {
+                color: isDark ? '#fff' : '#000'
+              }
+            }
+          }
+        }
+      });
+    </script>
+  {% endif %}
+{% endblock %}
