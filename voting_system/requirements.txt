@@ -2,6 +2,7 @@ Django==5.1.6
 gunicorn
 whitenoise
 openpyxl
+xhtml2pdf
 
 
 # Form and UI enhancements
